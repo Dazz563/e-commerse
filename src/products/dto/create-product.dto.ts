@@ -12,7 +12,7 @@ export class CreateProductDto {
     @IsString()
     productDescription: string;
 
-    // @Transform(({ value }) => parseInt(value))
+    @Transform(({ value }) => parseInt(value))
     @IsNotEmpty()
     @IsNumber()
     price: number;
