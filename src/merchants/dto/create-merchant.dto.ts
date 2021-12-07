@@ -1,21 +1,16 @@
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 
-export class CreateUserDto {
+export class CreateMerchantDto {
 
     @IsString()
     @MinLength(4)
     @MaxLength(20)
-    first_name: string;
-
-    @IsString()
-    @MinLength(4)
-    @MaxLength(20)
-    last_name: string;
+    merchant_name: string;
 
     @IsString()
     @IsNotEmpty()
-    address: string;
+    location: string;
 
     @IsString()
     @IsNotEmpty()

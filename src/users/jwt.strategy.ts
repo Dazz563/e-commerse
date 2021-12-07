@@ -13,8 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
         @InjectRepository(User)
         private userRepo: Repository<User>,
-        // @InjectRepository(Merchant)
-        // private merchantRepo: Repository<Merchant>,
     ) {
         super({
             secretOrKey: 'topSecret51',
@@ -23,8 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPayload): Promise<User> {
-        const { username } = payload;
-        const user: User = await this.userRepo.findOne({ username });
+        const { first_name } = payload;
+        const user: User = await this.userRepo.findOne({ first_name });
 
         if (!user) {
             throw new UnauthorizedException();

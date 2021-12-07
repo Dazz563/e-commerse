@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -8,6 +8,7 @@ import { Product } from './product.entity';
 import { ProductsService } from './products.service';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
+import { Merchant } from 'src/merchants/merchants.entity';
 
 export const storage = {
     storage: diskStorage({
@@ -38,7 +39,9 @@ export class ProductsController {
     }
 
     @Post()
-    createProduct(@Body() createProductDto: CreateProductDto): Promise<Product> {
+    createProduct(
+        @Body() createProductDto: CreateProductDto,
+    ): Promise<Product> {
         return this.productsService.createProduct(createProductDto);
     }
 
@@ -55,7 +58,6 @@ export class ProductsController {
     @Post('/upload')
     @UseInterceptors(FilesInterceptor('image', 20, storage))
     async uploadMultipleFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
-        // console.log(files);
         const response = [];
         files.forEach(file => {
             const fileReponse = {

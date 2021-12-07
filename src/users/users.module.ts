@@ -15,13 +15,9 @@ import { UsersService } from './users.service';
     }),
     JwtModule.register({
       secret: 'topSecret51',
-      signOptions: {
-        expiresIn: 7200
-      }
+      signOptions: { expiresIn: '1d' }
     }),
-    TypeOrmModule.forFeature([
-      User
-    ]),
+    TypeOrmModule.forFeature([User]),
   ],
   providers: [
     AuthService,

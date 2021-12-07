@@ -1,24 +1,27 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './user.entity';
+import { Merchant } from './merchants.entity';
 import * as bcrypt from 'bcrypt';
+import { AuthService } from 'src/users/auth.service';
+import { CreateMerchantDto } from './dto/create-merchant.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './jwt-payload.interface';
+
+
 
 @Injectable()
-export class UsersService {
+export class MerchantsService {
+
     constructor(
-        @InjectRepository(User)
-        private readonly repo: Repository<User>,
+        @InjectRepository(Merchant)
+        private readonly repo: Repository<Merchant>,
         private authService: AuthService,
         private jwtService: JwtService,
+
     ) { }
 
-    async createUser(createUserDto: CreateUserDto): Promise<void> {
-        let { first_name, last_name, contact_number, address, password, confirm_password, email, role } = createUserDto;
+    async createMerchant(createMerchantDto: CreateMerchantDto): Promise<void> {
+        let { merchant_name, location, contact_number, password, confirm_password, email, role } = createMerchantDto;
 
         if (password !== confirm_password) {
             throw new BadRequestException('passwords do not match');
@@ -26,9 +29,7 @@ export class UsersService {
 
         password = await this.authService.encryptPassword(password);
 
-        const user = this.repo.create({ first_name, last_name, contact_number, address, password, email, role });
-
-
+        const user = this.repo.create({ merchant_name, location, contact_number, password, email, role });
 
         try {
             await this.repo.save(user);
@@ -43,45 +44,40 @@ export class UsersService {
         }
     }
 
-    async signin(email: string, password: string): Promise<{ accessToken: string }> {
-        const user = await this.repo.findOne({ email });
+    async signin(email: string, password: string) {
+        const merchant = await this.repo.findOne({ email });
 
-        if (user && (await bcrypt.compare(password, user.password))) {
+        if (merchant && (await bcrypt.compare(password, merchant.password))) {
 
-            const payload: JwtPayload = {
-                first_name: user.first_name,
-                last_name: user.last_name,
-                role: user.role
-            };
+            const jwt = await this.jwtService.signAsync({ id: merchant.id, name: merchant.merchant_name })
 
-            const accessToken = await this.jwtService.signAsync(payload);
-            return { accessToken };
+            return merchant;
         }
         else {
             throw new UnauthorizedException('please check your login credentails');
         }
     }
 
-    async findUserById(id: string) {
+    async findMerchantById(id: string): Promise<Merchant> {
         if (!id) {
             return null;
         }
 
-        const user = await this.repo.findOne(id);
+        const merchant = await this.repo.findOne(id);
 
-        if (!user) {
-            throw new NotFoundException('user not found');
+        if (!merchant) {
+            throw new NotFoundException('merchant not found');
         }
 
-        return user;
+        return merchant;
     }
 
-    findUserByEmail(email: string) {
+    findMerchantByEmail(email: string): Promise<Merchant[]> {
         return this.repo.find({ email });
     }
 
-    async updateUser(id: string, attrs: Partial<User>) {
-        const user = await this.findUserById(id);
+    async updateMerchant(id: string, attrs: Partial<Merchant>): Promise<Merchant> {
+        const user = await this.findMerchantById(id);
 
         if (!user) {
             throw new NotFoundException('user not found');
@@ -91,7 +87,7 @@ export class UsersService {
         return this.repo.save(user);
     }
 
-    async deleteUser(id: string): Promise<void> {
+    async deleteMerchant(id: string): Promise<void> {
         const result = await this.repo.delete(id);
 
         if (result.affected === 0) {

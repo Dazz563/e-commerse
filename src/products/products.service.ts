@@ -41,7 +41,9 @@ export class ProductsService {
         return found;
     }
 
-    async createProduct({ productName, productDescription, price }: CreateProductDto): Promise<Product> {
+    async createProduct(
+        { productName, productDescription, price }: CreateProductDto,
+    ): Promise<Product> {
 
         const newProduct = this.repo.create({
             productName,
