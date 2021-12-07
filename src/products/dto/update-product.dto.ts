@@ -5,11 +5,11 @@ export class UpdateProductDto {
 
     @IsOptional()
     @IsString()
-    productName: string;
+    product_name: string;
 
     @IsOptional()
     @IsString()
-    productDescription: string;
+    product_description: string;
 
     @Transform(({ value }) => parseInt(value))
     @IsOptional()

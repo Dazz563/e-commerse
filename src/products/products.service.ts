@@ -20,7 +20,7 @@ export class ProductsService {
         if (search) {
             query.andWhere(
                 // 'product.productName LIKE :search OR product.productDescription LIKE :search OR product.price LIKE :search',
-                'LOWER(product.productName) LIKE LOWER(:search) OR LOWER(product.productDescription) LIKE LOWER(:search)',
+                'LOWER(product.product_name) LIKE LOWER(:search) OR LOWER(product.product_description) LIKE LOWER(:search)',
                 { search: `%${search}%` },
             )
 
@@ -42,12 +42,12 @@ export class ProductsService {
     }
 
     async createProduct(
-        { productName, productDescription, price }: CreateProductDto,
+        { product_name, product_description, price }: CreateProductDto,
     ): Promise<Product> {
 
         const newProduct = this.repo.create({
-            productName,
-            productDescription,
+            product_name,
+            product_description,
             price,
         });
 

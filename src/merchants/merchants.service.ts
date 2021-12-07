@@ -49,7 +49,7 @@ export class MerchantsService {
 
         if (merchant && (await bcrypt.compare(password, merchant.password))) {
 
-            const jwt = await this.jwtService.signAsync({ id: merchant.id, name: merchant.merchant_name })
+            const jwt = await this.jwtService.sign({ id: merchant.id, name: merchant.merchant_name })
 
             return merchant;
         }

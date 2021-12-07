@@ -8,10 +8,10 @@ export class Product {
     id: string;
 
     @Column()
-    productName: string;
+    product_name: string;
 
     @Column()
-    productDescription: string;
+    product_description: string;
 
     @Column()
     price: number;

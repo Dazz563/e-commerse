@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Orders } from "src/orders/orders.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
@@ -27,4 +28,7 @@ export class User {
 
     @Column({ unique: true })
     email: string;
+
+    @OneToMany(() => Orders, orders => orders.user, { eager: true })
+    orders: Orders[];
 }
