@@ -72,8 +72,8 @@ export class MerchantsService {
         return merchant;
     }
 
-    findMerchantByEmail(email: string): Promise<Merchant[]> {
-        return this.repo.find({ email });
+    findMerchantByEmail(email: string): Promise<Merchant> {
+        return this.repo.findOne(email);
     }
 
     async updateMerchant(id: string, attrs: Partial<Merchant>): Promise<Merchant> {

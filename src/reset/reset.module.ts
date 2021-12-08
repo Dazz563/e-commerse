@@ -4,9 +4,11 @@ import { ResetController } from './reset.controller';
 import { PasswordReset } from './reset.entity';
 import { ResetService } from './reset.service';
 import { MailerModule } from '@nestjs-modules/mailer'
+import { MerchantsModule } from 'src/merchants/merchants.module';
 
 @Module({
   imports: [
+    MerchantsModule,
     MailerModule.forRoot({
       transport: {
         host: 'localhost',
@@ -19,9 +21,8 @@ import { MailerModule } from '@nestjs-modules/mailer'
     TypeOrmModule.forFeature([
       PasswordReset,
     ]),
-
   ],
   controllers: [ResetController],
-  providers: [ResetService]
+  providers: [ResetService,]
 })
 export class ResetModule { }

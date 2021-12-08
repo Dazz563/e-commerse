@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Session, UseGuards } from '@nestjs/common';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CurrentMerchant } from './decorators/current-merchant.decorator';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
@@ -8,12 +7,16 @@ import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { MerchantGuard } from './guards/merchant.guard';
 import { Merchant } from './merchants.entity';
 import { MerchantsService } from './merchants.service';
+import { MailerService } from '@nestjs-modules/mailer'
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('merchants')
 @Serialize(MerchantDto)
 export class MerchantsController {
     constructor(
         private merchantsService: MerchantsService,
+        private mailerService: MailerService,
+
     ) { }
 
     @Get('/whoami')
@@ -59,7 +62,7 @@ export class MerchantsController {
 
     @Get()
     @UseGuards(MerchantGuard)
-    findMerchantByEmail(@Query('email') email: string): Promise<Merchant[]> {
+    findMerchantByEmail(@Query('email') email: string): Promise<Merchant> {
         return this.merchantsService.findMerchantByEmail(email);
     }
 
@@ -73,5 +76,31 @@ export class MerchantsController {
     @UseGuards(MerchantGuard)
     removeUser(@Param('id') id: string): Promise<void> {
         return this.merchantsService.deleteMerchant(id);
+    }
+
+    @Post('/forgot-password')
+    @UseGuards(MerchantGuard)
+    async forgotPassword(@Body('email') email: string,
+        @CurrentMerchant() merchant: Merchant,
+    ) {
+        if (merchant.email !== email) {
+            throw new NotFoundException('no user with this email exists')
+        }
+
+        // let token = uuidv4();
+        // const url = `http://localhost:4200/reset${token}`;
+        const url = `http://localhost:4200/reset`;
+
+
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Reset your password',
+            html: `Click <a href="${url}">here</a> to reset your password!`
+        })
+
+        return {
+            message: 'Check your email',
+        }
+
     }
 }

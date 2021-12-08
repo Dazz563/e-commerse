@@ -20,4 +20,8 @@ export class MerchantDto {
 
     @Expose()
     role: string;
+
+    // This exposes the return on forgot password endpoint
+    @Expose()
+    message: string;
 }

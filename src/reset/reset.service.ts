@@ -21,4 +21,8 @@ export class ResetService {
 
         return await this.repo.save(newReset);
     }
+
+    async findOne(condition): Promise<PasswordReset> {
+        return await this.repo.findOne(condition);
+    }
 }
