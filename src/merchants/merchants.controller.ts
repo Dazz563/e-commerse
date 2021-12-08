@@ -1,7 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { CurrentMerchant } from './decorators/current-merchant.decorator';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
+import { MerchantGuard } from './guards/merchant.guard';
+import { Merchant } from './merchants.entity';
 import { MerchantsService } from './merchants.service';
 
 @Controller('merchants')
@@ -10,48 +13,62 @@ export class MerchantsController {
         private merchantsService: MerchantsService,
     ) { }
 
+    @Get('/whoami')
+    @UseGuards(MerchantGuard)
+    whoAmI(@CurrentMerchant() merchant: Merchant) {
+        return merchant;
+    }
+
     @Post('/signup')
-    signup(@Body() createMerchantDto: CreateMerchantDto): Promise<void> {
-        return this.merchantsService.createMerchant(createMerchantDto);
+    async signup(
+        @Body() createMerchantDto: CreateMerchantDto,
+        @Session() session: any,
+    ): Promise<Merchant> {
+        const merchant = await this.merchantsService.createMerchant(createMerchantDto);
+        session.userId = merchant;
+        return merchant;
     }
 
     @Post('signin')
     async signin(
         @Body('email') email: string,
         @Body('password') password: string,
-        // @Res() response: Response,
-    ) {
-        return this.merchantsService.signin(email, password);
+        @Session() session: any,
+
+    ): Promise<Merchant> {
+        const merchant = await this.merchantsService.signin(email, password);
+        session.userId = merchant.id;
+        return merchant;
     }
 
-    // @Post('/signin')
-    // signin(
-    //     @Body('email') email: string,
-    //     @Body('password') password: string,
-    // ): Promise<{ accessToken: string }> {
+    @Post('/signout')
+    @UseGuards(MerchantGuard)
+    signout(@Session() session: any): void {
+        session.userId = null;
+    }
 
-    //     return this.merchantsService.signin(email, password);
-    // }
-
-    // Possibly for Admin controller
     @Get('/:id')
-    findMerchantById(@Param('id') id: string) {
+    @UseGuards(MerchantGuard)
+    findMerchantById(@Param('id') id: string): Promise<Merchant> {
         return this.merchantsService.findMerchantById(id);
     }
 
-    // Possibly for Admin controller
+
     @Get()
-    findMerchantByEmail(@Query('email') email: string) {
+    @UseGuards(MerchantGuard)
+    findMerchantByEmail(@Query('email') email: string): Promise<Merchant[]> {
         return this.merchantsService.findMerchantByEmail(email);
     }
 
     @Patch('/:id')
-    updateUser(@Param('id') id: string, @Body() body: UpdateMerchantDto) {
+    @UseGuards(MerchantGuard)
+    updateUser(@Param('id') id: string, @Body() body: UpdateMerchantDto): Promise<Merchant> {
         return this.merchantsService.updateMerchant(id, body);
     }
 
     @Delete('/:id')
-    removeUser(@Param('id') id: string) {
+    @UseGuards(MerchantGuard)
+    removeUser(@Param('id') id: string): Promise<void> {
         return this.merchantsService.deleteMerchant(id);
     }
 }

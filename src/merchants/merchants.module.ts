@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from 'src/users/auth.service';
+import { CurrentMerchantInterceptor } from './interceptors/current-merchant.interceptor';
 import { MerchantsController } from './merchants.controller';
 import { Merchant } from './merchants.entity';
 import { MerchantsService } from './merchants.service';
@@ -9,10 +10,6 @@ import { MerchantsService } from './merchants.service';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: 'topSecret51',
-      signOptions: { expiresIn: '1d' }
-    }),
     TypeOrmModule.forFeature([
       Merchant,
     ]),
@@ -21,6 +18,10 @@ import { MerchantsService } from './merchants.service';
   providers: [
     MerchantsService,
     AuthService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CurrentMerchantInterceptor
+    }
   ],
   exports: []
 })

@@ -5,7 +5,6 @@ import { Merchant } from './merchants.entity';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from 'src/users/auth.service';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
-import { JwtService } from '@nestjs/jwt';
 
 
 
@@ -16,11 +15,10 @@ export class MerchantsService {
         @InjectRepository(Merchant)
         private readonly repo: Repository<Merchant>,
         private authService: AuthService,
-        private jwtService: JwtService,
 
     ) { }
 
-    async createMerchant(createMerchantDto: CreateMerchantDto): Promise<void> {
+    async createMerchant(createMerchantDto: CreateMerchantDto): Promise<Merchant> {
         let { merchant_name, location, contact_number, password, confirm_password, email, role } = createMerchantDto;
 
         if (password !== confirm_password) {
@@ -29,10 +27,12 @@ export class MerchantsService {
 
         password = await this.authService.encryptPassword(password);
 
-        const user = this.repo.create({ merchant_name, location, contact_number, password, email, role });
+        const merchant = this.repo.create({ merchant_name, location, contact_number, password, email, role });
 
         try {
-            await this.repo.save(user);
+            await this.repo.save(merchant);
+
+            return merchant;
         }
         catch (error) {
             if (error.code === '23505') {
@@ -49,7 +49,7 @@ export class MerchantsService {
 
         if (merchant && (await bcrypt.compare(password, merchant.password))) {
 
-            const jwt = await this.jwtService.sign({ id: merchant.id, name: merchant.merchant_name })
+            // const jwt = await this.jwtService.sign({ id: merchant.id, name: merchant.merchant_name })
 
             return merchant;
         }

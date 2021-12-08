@@ -5,8 +5,6 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +12,6 @@ export class UsersService {
         @InjectRepository(User)
         private readonly repo: Repository<User>,
         private authService: AuthService,
-        private jwtService: JwtService,
     ) { }
 
     async createUser(createUserDto: CreateUserDto): Promise<void> {
@@ -43,19 +40,12 @@ export class UsersService {
         }
     }
 
-    async signin(email: string, password: string): Promise<{ accessToken: string }> {
+    async signin(email: string, password: string): Promise<User> {
         const user = await this.repo.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.password))) {
 
-            const payload: JwtPayload = {
-                first_name: user.first_name,
-                last_name: user.last_name,
-                role: user.role
-            };
-
-            const accessToken = await this.jwtService.signAsync(payload);
-            return { accessToken };
+            return user;
         }
         else {
             throw new UnauthorizedException('please check your login credentails');
