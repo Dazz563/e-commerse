@@ -1,13 +1,16 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CurrentMerchant } from './decorators/current-merchant.decorator';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
+import { MerchantDto } from './dto/merchant.dto';
 import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { MerchantGuard } from './guards/merchant.guard';
 import { Merchant } from './merchants.entity';
 import { MerchantsService } from './merchants.service';
 
 @Controller('merchants')
+@Serialize(MerchantDto)
 export class MerchantsController {
     constructor(
         private merchantsService: MerchantsService,
