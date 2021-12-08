@@ -4,6 +4,7 @@ import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { MerchantsModule } from './merchants/merchants.module';
 import { OrdersModule } from './orders/orders.module';
+import { ResetModule } from './reset/reset.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OrdersModule } from './orders/orders.module';
     UsersModule,
     MerchantsModule,
     OrdersModule,
+    ResetModule,
   ],
   controllers: [],
   providers: [],
