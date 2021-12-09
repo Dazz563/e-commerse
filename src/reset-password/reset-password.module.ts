@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ResetController } from './reset.controller';
-import { PasswordReset } from './reset.entity';
-import { ResetService } from './reset.service';
+import { PasswordReset } from './reset-password.entity';
+import { ResetPasswordService } from './reset-password.service';
 import { MailerModule } from '@nestjs-modules/mailer'
 import { MerchantsModule } from 'src/merchants/merchants.module';
+import { ResetPasswordController } from './reset-password.controller';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { MerchantsModule } from 'src/merchants/merchants.module';
       PasswordReset,
     ]),
   ],
-  controllers: [ResetController],
-  providers: [ResetService,]
+  controllers: [ResetPasswordController],
+  providers: [ResetPasswordService,]
 })
-export class ResetModule { }
+export class ResetPasswordModule { }

@@ -6,7 +6,6 @@ import { CurrentMerchantInterceptor } from './interceptors/current-merchant.inte
 import { MerchantsController } from './merchants.controller';
 import { Merchant } from './merchants.entity';
 import { MerchantsService } from './merchants.service';
-import { MailerModule } from '@nestjs-modules/mailer'
 
 
 @Module({
@@ -14,15 +13,6 @@ import { MailerModule } from '@nestjs-modules/mailer'
     TypeOrmModule.forFeature([
       Merchant,
     ]),
-    MailerModule.forRoot({
-      transport: {
-        host: 'localhost',
-        port: 1025
-      },
-      defaults: {
-        from: 'no-reply@localhost.com'
-      }
-    }),
   ],
   controllers: [MerchantsController],
   providers: [

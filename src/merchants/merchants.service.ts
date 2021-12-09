@@ -73,7 +73,7 @@ export class MerchantsService {
     }
 
     findMerchantByEmail(email: string): Promise<Merchant> {
-        return this.repo.findOne(email);
+        return this.repo.findOne({ email });
     }
 
     async updateMerchant(id: string, attrs: Partial<Merchant>): Promise<Merchant> {

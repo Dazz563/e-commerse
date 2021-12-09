@@ -4,7 +4,7 @@ import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { MerchantsModule } from './merchants/merchants.module';
 import { OrdersModule } from './orders/orders.module';
-import { ResetModule } from './reset/reset.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { ResetModule } from './reset/reset.module';
     UsersModule,
     MerchantsModule,
     OrdersModule,
-    ResetModule,
+    ResetPasswordModule,
   ],
   controllers: [],
   providers: [],

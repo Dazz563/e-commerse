@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PasswordReset } from './reset.entity';
+import { PasswordReset } from './reset-password.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class ResetService {
+export class ResetPasswordService {
 
     token: string;
 
@@ -22,7 +22,7 @@ export class ResetService {
         return await this.repo.save(newReset);
     }
 
-    async findOne(condition): Promise<PasswordReset> {
-        return await this.repo.findOne(condition);
+    async findOne(token: string): Promise<PasswordReset> {
+        return await this.repo.findOne({ token });
     }
 }

@@ -77,30 +77,4 @@ export class MerchantsController {
     removeUser(@Param('id') id: string): Promise<void> {
         return this.merchantsService.deleteMerchant(id);
     }
-
-    @Post('/forgot-password')
-    @UseGuards(MerchantGuard)
-    async forgotPassword(@Body('email') email: string,
-        @CurrentMerchant() merchant: Merchant,
-    ) {
-        if (merchant.email !== email) {
-            throw new NotFoundException('no user with this email exists')
-        }
-
-        // let token = uuidv4();
-        // const url = `http://localhost:4200/reset${token}`;
-        const url = `http://localhost:4200/reset`;
-
-
-        await this.mailerService.sendMail({
-            to: email,
-            subject: 'Reset your password',
-            html: `Click <a href="${url}">here</a> to reset your password!`
-        })
-
-        return {
-            message: 'Check your email',
-        }
-
-    }
 }
